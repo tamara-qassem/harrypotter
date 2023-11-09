@@ -8,20 +8,22 @@ import matplotlib.pyplot as plt
 from nltk import bigrams, trigrams
 from collections import Counter
 import nltk
+import panel as pn
+import hvplot.pandas
+pn.extension()
 import re
 import plotly.express as px  # Import Plotly Express for creating figures
 import string
 from nltk.corpus import stopwords
-from nltk.tokenize import word_tokenize
-
 nltk.download('punkt')
 nltk.download('stopwords')
+from nltk.tokenize import word_tokenize
 
-df = pd.read_csv('datasets/Characters.csv', delimiter=';')
+df = pd.read_csv('datasets/Characters.csv', delimiter = ';')
 
 def clean_blood_status(value):
     if isinstance(value, str):
-        normalized_value = re.sub(r'\s+', ' ', value.lower().strip())
+        normalized_value = re.sub(r'\s+', ' ', value.lower().strip())  
         if 'pure-blood or half-blood' in normalized_value:
             return 'Pure-blood or half-blood'
         elif 'half-blood or pure-blood' in normalized_value:
@@ -50,13 +52,32 @@ def clean_loyalty(value):
 
 df['Loyalty'] = df['Loyalty'].apply(clean_loyalty)
 
-# Combined replace
+#Combined replace
 df['Loyalty'] = df['Loyalty'].replace({
     'Order of the Phoenix| British Ministry of Magic': 'Ministry of Magic | Order of the Phoenix',
     'Lord Voldemort': 'Lord Voldemort| Death Eaters'
 }, regex=True)
 
-idf = df.copy()
+# Define Panel widgets
+idf = df.copy()  # Make sure to copy the DataFrame to avoid modifying the original
+house = pn.widgets.ToggleGroup(
+    name='House',
+    options=['Gryffindor', 'Slytherin', 'Ravenclaw', 'Hufflepuff'], 
+    value=['Gryffindor', 'Slytherin', 'Ravenclaw', 'Hufflepuff'],
+    button_type='success')
+loyalty = pn.widgets.ToggleGroup(
+    name='Loyalty',
+    options=['Order of the Phoenix', 'Lord Voldemort', "Dumbledore's Army + Hogwarts", 
+            "Dumbledore's Army + Order of Phoenix + Hogwarts", "Hogwarts","Original Order of the Phoenix",
+            "Dumbledore's Army", "Minister of Magic"], 
+    value=['Order of the Phoenix', 'Lord Voldemort| Death Eaters', 
+        "Dumbledore's Army |Hogwarts School of Witchcraft and Wizardry",
+        "Dumbledore's Army | Order of the Phoenix | Hogwarts School of Witchcraft and Wizardry", 
+        "Hogwarts School of Witchcraft and Wizardry", "Original Order of the Phoenix", "Dumbledore's Army",
+        "Minister of Magic"
+        ],
+    button_type='success')
+
 
 def preprocess_loyalty(loyalty_str):
     if pd.isna(loyalty_str):
@@ -74,6 +95,7 @@ def preprocess_loyalty(loyalty_str):
 
 idf['Loyalty'] = idf['Loyalty'].apply(preprocess_loyalty)
 
+
 # Create interactive dashboard function
 def create_dashboard(house_value, loyalty_value):
     filtered_data = (
@@ -86,18 +108,18 @@ def create_dashboard(house_value, loyalty_value):
     )
     # Create a Plotly figure using Plotly Express
     fig = px.bar(filtered_data, x='House', y='Loyalty', title=f'Distribution for House and {loyalty_value} Loyalty')
-
+    
     return fig  # Return the Plotly figure
 
 # Available options for house and loyalty
 available_houses = ['Gryffindor', 'Slytherin', 'Ravenclaw', 'Hufflepuff']
-available_loyalties = ['Order of the Phoenix', 'Lord Voldemort', "Dumbledore's Army + Hogwarts",
-                        "Dumbledore's Army + Order of Phoenix + Hogwarts", "Hogwarts", "Original Order of the Phoenix",
-                        "Dumbledore's Army", "Minister of Magic"]
+available_loyalties = ['Order of the Phoenix', 'Lord Voldemort', "Dumbledore's Army + Hogwarts", 
+                    "Dumbledore's Army + Order of Phoenix + Hogwarts", "Hogwarts","Original Order of the Phoenix",
+                    "Dumbledore's Army", "Minister of Magic"]
 
 ## Harry Potter Movie 1
 
-df1 = pd.read_csv('datasets/Harry Potter 1.csv', delimiter=";")
+df1 = pd.read_csv('datasets/Harry Potter 1.csv', delimiter = ";")
 df1['Character'] = df1['Character'].str.strip()
 df1['Character'] = df1['Character'].replace({
     'OIiver': 'Oliver',
@@ -114,9 +136,9 @@ def clean(sentence):
     sentence = re.sub("@[A-Za-z0-9_]+", "", sentence)  # removing mentions
     sentence = re.sub("#[A-Za-z0-9_]+", "", sentence)  # removing hashtags
     sentence = re.sub(r"(?:\@|http?\://|https?\://|www)\S+", "", sentence)  # removing links
-    sentence = re.sub('[()!?]', '', sentence)  # removing punctuation
-    sentence = re.sub('\[.*?\]', '', sentence)  # removing punctuation
-    sentence = re.sub("[^a-z0-9]", " ", sentence)  # removing non-alphanumeric characters
+    sentence = re.sub('[()!?]', '', sentence) #removing punctuation
+    sentence = re.sub('\[.*?\]','', sentence) #removing punctuation
+    sentence = re.sub("[^a-z0-9]"," ", sentence) #removing non-alphanumeric characters 
     sentence = sentence.split()  # simple word tokenization
     sentence = [w for w in sentence if not w in stop_words]  # removing stopwords
     sentence = " ".join(word for word in sentence)
@@ -124,8 +146,9 @@ def clean(sentence):
 
 df1['clean_sentence'] = df1['Sentence'].map(lambda x: clean(x))
 
+
 ## Harry Potter Movie 2
-df2 = pd.read_csv('datasets/Harry Potter 2.csv', delimiter=";")
+df2 = pd.read_csv('datasets/Harry Potter 2.csv', delimiter = ';')
 df2['Character'] = df2.Character.str.strip()
 df2['Character'] = df2['Character'].apply(lambda x: x.title())
 df2.loc[df2['Character'].str.contains('Lockhart'), 'Character'] = 'Gilderoy Lockhart'
@@ -140,9 +163,9 @@ df2['Character'] = df2['Character'].replace({
 df2['clean_sentence'] = df2['Sentence'].map(lambda x: clean(x))
 
 ## Harry Potter Movie 3
-df3 = pd.read_csv('datasets/Harry Potter 3.csv', delimiter=";")
+df3 = pd.read_csv('datasets/Harry Potter 3.csv', delimiter = ';')
 df3 = df3.rename(columns={'CHARACTER': 'Character', 'SENTENCE': 'Sentence'})
-df3['Character'] = df3.Character.str.strip()
+df3['Character']=df3.Character.str.strip()
 df3['Character'] = df3['Character'].apply(lambda x: x.title())
 df3['Character'] = df3['Character'].replace({
     'Mcgonagall': 'McGonagall',
@@ -157,23 +180,19 @@ df2['Part'] = "Chamber of Secrets"
 df3['Part'] = "Prisoner of Azkaban"
 
 lst = [df1, df2, df3]  # List of your dataframes
-df4 = pd.concat(lst, ignore_index=True)
+df4= pd.concat(lst, ignore_index=True)
 
 # Sidebar title
 st.sidebar.title("Harry Potter Analysis")
 
 # Sidebar widgets for selecting the movie
-movie_choice = st.sidebar.selectbox("Select Movie",
-                                    ["Overall Information", "Harry Potter and the Philosopher's Stone",
-                                     "Harry Potter and the Chamber of Secrets", "Harry Potter and the Prisoner of Azkaban"])  # Add more movies as needed
+movie_choice = st.sidebar.selectbox("Select Movie", ["Overall Information","Harry Potter and the Philosopher's Stone", "Harry Potter and the Chamber of Secrets", "Harry Potter and the Prisoner of Azkaban"])  # Add more movies as needed
 
 with st.sidebar:
     if movie_choice == "Overall Information":
-        analysis_choice = st.selectbox("Select Analysis", ["General Distributions", "Interactive Dashboard",
-                                                           "Combined Movies Character Analysis"])
+        analysis_choice = st.selectbox("Select Analysis", ["General Distributions", "Interactive Dashboard", "Combined Movies Character Analysis"])
     else:
-        analysis_choice = st.selectbox("Select Analysis",
-                                       ["Word Cloud", "Word Frequency", "Bigrams", "Trigrams", "Character Analysis"])
+        analysis_choice = st.selectbox("Select Analysis", ["Word Cloud", "Word Frequency", "Bigrams", "Trigrams", "Character Analysis"])
 
 # Load the corresponding dataset based on the selected movie
 if movie_choice == "Harry Potter and the Philosopher's Stone":
@@ -189,43 +208,40 @@ st.title(f"{movie_choice} Analysis")
 # Display analysis based on user choice
 if movie_choice == "Overall Information" and analysis_choice == "General Distributions":
     st.header("General Distributions")
-
+    
     # Gender Donut Chart
     gender_counts = df['Gender'].value_counts()
     st.write("Gender Distribution")
     fig_gender = go.Figure(data=[go.Pie(labels=gender_counts.index, values=gender_counts.values, hole=0.4,
                                         textinfo='percent+label', marker=dict(colors=['#00008B', '#AA336A']))])
     st.plotly_chart(fig_gender)
-
+    
     # House Donut Chart
     house_counts = df['House'].value_counts()
     st.write("House Distribution")
     fig_house = go.Figure(data=[go.Pie(labels=house_counts.index, values=house_counts.values, hole=0.4,
-                                        textinfo='percent+label', marker=dict(
-            colors=['#740001', '#1A472A', '#0E1A40', '#FFD800', '#946B2D', '#000000']))])
+                                        textinfo='percent+label', marker=dict(colors=['#740001', '#1A472A', '#0E1A40', '#FFD800','#946B2D','#000000']))])
     st.plotly_chart(fig_house)
-
+    
     # Species Bar Plot
     species_counts = df['Species'].value_counts()
-    species_counts = species_counts.sort_values(ascending=True)
+    species_counts = species_counts.sort_values(ascending=True) 
     st.write("Species Distribution")
-    fig_species = go.Figure(data=[go.Bar(x=species_counts.values, y=species_counts.index, text=species_counts.values,
-                                          orientation='h', marker=dict(color='#0067a5'))])
+    fig_species = go.Figure(data=[go.Bar(x=species_counts.values, y=species_counts.index, text=species_counts.values, orientation='h', marker=dict(color='#0067a5'))])
     st.plotly_chart(fig_species)
-
+    
     # Blood Status Bar Plot
     blood_status_counts = df['Blood status'].value_counts()
     blood_status_counts = blood_status_counts.sort_values(ascending=True)
     st.write("Blood Status Distribution")
-    fig_blood = go.Figure(data=[go.Bar(x=blood_status_counts.values, y=blood_status_counts.index,
-                                       text=blood_status_counts.values, orientation='h', marker=dict(color='#b31b1b'))])
+    fig_blood = go.Figure(data=[go.Bar(x=blood_status_counts.values, y=blood_status_counts.index, text=blood_status_counts.values, orientation='h', marker=dict(color='#b31b1b'))])
     st.plotly_chart(fig_blood)
 
 
 elif movie_choice == "Overall Information" and analysis_choice == "Interactive Dashboard":
     st.header("Harry Potter Interactive Dashboard")
     st.write("Use the filters below to explore the Interactive Dashboard.")
-
+    
     # Sidebar widgets for the Interactive Dashboard
     house_key = "house_filter"  # Unique key for the house filter
     loyalty_key = "loyalty_filter"  # Unique key for the loyalty filter
@@ -246,15 +262,15 @@ elif movie_choice == "Overall Information" and analysis_choice == "Interactive D
     st.plotly_chart(create_dashboard(house, loyalty))
 
 elif movie_choice == "Overall Information" and analysis_choice == "Combined Movies Character Analysis":
-    # Create a DataFrame with character dialogue counts
+            # Create a DataFrame with character dialogue counts
     st.header("Combined First 3 Movies Character Analysis")
 
     df5 = df4.groupby(['Character', 'Part']).size().reset_index(name='Freq')
 
     # Filter characters
     selected_characters = ["Harry", "Ron", "Hermione", "Hagrid", "Dumbledore", "Lupin", "McGonagall",
-                           "Draco", "Gilderoy Lockhart", "Snape", "Lucius Malfoy",
-                           "Mrs. Weasley", "Tom Riddle", "Sirius", "Dobby"]
+                        "Draco", "Gilderoy Lockhart", "Snape", "Lucius Malfoy",
+                        "Mrs. Weasley", "Tom Riddle", "Sirius", "Dobby"]
 
     characters_filtered = df5[df5['Character'].isin(selected_characters)]
 
@@ -271,7 +287,6 @@ elif movie_choice == "Overall Information" and analysis_choice == "Combined Movi
     # Create a new column for the total sum of all parts for each character
     character_sorted['Total'] = character_sorted.groupby('Character')['Freq'].transform('sum')
 
- 
     # Plotting using Plotly
     fig = px.bar(character_sorted,
                 x='Freq',
