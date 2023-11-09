@@ -7,4 +7,4 @@ Have you ever laid awake at night, pondering the pressing question of which Harr
 
 Sure, there are plenty of data analysis projects out there, but how many of them let you dive into the magical world of wizards and witches? Behold, the Harry Potter Data Analysis project! But wait, there's more! I didn't just stop at boring charts and graphs; I spiced it up with Streamlit. Yes, you heard it right—interactivity that even Professor Snape would crack a smile at. Dive in, play with the data, and discover the magic of analytics (not actual magic, unfortunately).
 
-Ready to explore the wizarding world? Explore the magic of data analysis live [here](https://tamara-analysis-harry-potter.streamlit.app/)!
+Ready to delve into the wizarding world? Explore the magic of data analysis live [here](https://tamara-analysis-harry-potter.streamlit.app/)!
