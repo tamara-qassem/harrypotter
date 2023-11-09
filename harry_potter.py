@@ -1,7 +1,6 @@
 import pandas as pd
 import streamlit as st
 import numpy as np
-import seaborn as sns
 import plotly.graph_objects as go
 from wordcloud import WordCloud
 import matplotlib.pyplot as plt
@@ -9,7 +8,7 @@ from nltk import bigrams, trigrams
 from collections import Counter
 import nltk
 import re
-import plotly.express as px  # Import Plotly Express for creating figures
+import plotly.express as px
 import string
 from nltk.corpus import stopwords
 from nltk.tokenize import word_tokenize
