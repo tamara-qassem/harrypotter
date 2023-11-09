@@ -19,7 +19,7 @@ nltk.download('punkt')
 nltk.download('stopwords')
 from nltk.tokenize import word_tokenize
 
-df = pd.read_csv('/Users/tamara/Desktop/archive/Characters.csv', delimiter = ';')
+df = pd.read_csv('datasets/Characters.csv', delimiter = ';')
 
 def clean_blood_status(value):
     if isinstance(value, str):
@@ -119,7 +119,7 @@ available_loyalties = ['Order of the Phoenix', 'Lord Voldemort', "Dumbledore's A
 
 ## Harry Potter Movie 1
 
-df1 = pd.read_csv('/Users/tamara/Desktop/archive/Harry Potter 1.csv', delimiter = ";")
+df1 = pd.read_csv('datasets/Harry Potter 1.csv', delimiter = ";")
 df1['Character'] = df1['Character'].str.strip()
 df1['Character'] = df1['Character'].replace({
     'OIiver': 'Oliver',
@@ -148,7 +148,7 @@ df1['clean_sentence'] = df1['Sentence'].map(lambda x: clean(x))
 
 
 ## Harry Potter Movie 2
-df2 = pd.read_csv('/Users/tamara/Desktop/archive/Harry Potter 2.csv', delimiter = ';')
+df2 = pd.read_csv('datasets/Harry Potter 2.csv', delimiter = ';')
 df2['Character'] = df2.Character.str.strip()
 df2['Character'] = df2['Character'].apply(lambda x: x.title())
 df2.loc[df2['Character'].str.contains('Lockhart'), 'Character'] = 'Gilderoy Lockhart'
@@ -163,7 +163,7 @@ df2['Character'] = df2['Character'].replace({
 df2['clean_sentence'] = df2['Sentence'].map(lambda x: clean(x))
 
 ## Harry Potter Movie 3
-df3 = pd.read_csv('/Users/tamara/Desktop/archive/Harry Potter 3.csv', delimiter = ';')
+df3 = pd.read_csv('datasets/Harry Potter 3.csv', delimiter = ';')
 df3 = df3.rename(columns={'CHARACTER': 'Character', 'SENTENCE': 'Sentence'})
 df3['Character']=df3.Character.str.strip()
 df3['Character'] = df3['Character'].apply(lambda x: x.title())
