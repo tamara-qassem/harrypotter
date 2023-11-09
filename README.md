@@ -26,3 +26,17 @@ For the grand reveal, I used a combination of libraries:
 
 Why? Because static graphs are so Muggle-ish. With these libraries, the visualizations come to life, giving an interactive and enchanting feel to the results.
 
+## How to Use
+Replicating my project is quite simple. Follow these steps:
+
+```bash
+pip install -r requirements.txt
+```
+This will install all the libraries necessary for the project. 
+
+Then, run the following command:
+
+```bash
+streamlit run harry_potter.py
+```
+And voila! Your Harry Potter Data Analysis project is ready!
