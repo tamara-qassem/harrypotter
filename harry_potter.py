@@ -3,7 +3,6 @@ import streamlit as st
 import numpy as np
 import plotly.graph_objects as go
 from wordcloud import WordCloud
-import matplotlib.pyplot as plt
 from nltk import bigrams, trigrams
 from collections import Counter
 import nltk
